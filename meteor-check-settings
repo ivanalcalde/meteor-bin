@@ -1,0 +1,7 @@
+#!/bin/bash
+
+CONFIG=$1
+if [ ! -f $CONFIG ]; then
+  echo "Error: config file not found."
+  exit 1
+fi
