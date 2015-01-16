@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
-# OIFS=$IFS;
-# IFS=",";
+OIFS=$IFS;
+IFS=",";
 
 start(){
   local env_file="config/development/env.sh";
@@ -9,20 +9,20 @@ start(){
   if [ -f "$env_file" ]; then source "$env_file"; fi
 
   # $db se obtiene de env_file
-  dbname="$db"
-  host='127.0.0.1:27017'
+  local dbname="$db"
+  local host='127.0.0.1:27017'
 
-  collections=`mongo "$host/$dbname" --eval "rs.slaveOk();db.getCollectionNames();"`;
-  collectionArray=($collections);
+  local collections=`mongo "$host/$dbname" --eval "rs.slaveOk();db.getCollectionNames();"`;
+  local collectionArray=($collections);
 
   for ((i=0; i<${#collectionArray[@]}; ++i));
   do
       echo 'exporting collection' ${collectionArray[$i]}
-      #mongoexport --host $host --db $dbname -c ${collectionArray[$i]} --jsonArray --out private/data/${collectionArray[$i]}.json;
+      mongoexport --host $host --db $dbname -c ${collectionArray[$i]} --jsonArray --out private/data/${collectionArray[$i]}.json;
       sleep 1
   done
 }
 
 start
 
-# IFS=$OIFS;
+IFS=$OIFS;
