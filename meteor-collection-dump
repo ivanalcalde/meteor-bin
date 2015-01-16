@@ -1,21 +1,28 @@
-#!/bin/bash
-OIFS=$IFS;
-IFS=",";
+#!/usr/bin/env bash
+#
+# OIFS=$IFS;
+# IFS=",";
 
-# meteor local mongo (must be running)
-dbname='meteor'
-host='127.0.0.1:3002'
+start(){
+  local env_file="config/development/env.sh";
 
-# first get all collections in the database
-collections=`mongo "$host/$dbname" --eval "rs.slaveOk();db.getCollectionNames();"`;
-collectionArray=($collections);
+  if [ -f "$env_file" ]; then source "$env_file"; fi
 
-# for each collection
-for ((i=0; i<${#collectionArray[@]}; ++i));
-do
-    echo 'exporting collection' ${collectionArray[$i]}
-    mongoexport --host $host --db $dbname -c ${collectionArray[$i]} --jsonArray --out private/data/${collectionArray[$i]}.json;
-    sleep 1
-done
+  # $db se obtiene de env_file
+  dbname="$db"
+  host='127.0.0.1:27017'
 
-IFS=$OIFS;
+  collections=`mongo "$host/$dbname" --eval "rs.slaveOk();db.getCollectionNames();"`;
+  collectionArray=($collections);
+
+  for ((i=0; i<${#collectionArray[@]}; ++i));
+  do
+      echo 'exporting collection' ${collectionArray[$i]}
+      #mongoexport --host $host --db $dbname -c ${collectionArray[$i]} --jsonArray --out private/data/${collectionArray[$i]}.json;
+      sleep 1
+  done
+}
+
+start
+
+# IFS=$OIFS;
