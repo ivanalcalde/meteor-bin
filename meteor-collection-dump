@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-OIFS=$IFS;
-IFS=",";
 
 start(){
   local env_file="config/development/env.sh";
@@ -12,17 +10,9 @@ start(){
   local dbname="$db"
   local host='127.0.0.1:27017'
 
-  local collections=`mongo "$host/$dbname" --eval "rs.slaveOk();db.getCollectionNames();"`;
-  local collectionArray=($collections);
+  echo "Dumping database: $dbname"
+  mongodump --host $host --db $dbname --out private/data/backup;
 
-  for ((i=0; i<${#collectionArray[@]}; ++i));
-  do
-      echo 'exporting collection' ${collectionArray[$i]}
-      mongoexport --host $host --db $dbname -c ${collectionArray[$i]} --jsonArray --out private/data/${collectionArray[$i]}.json;
-      sleep 1
-  done
 }
 
 start
-
-IFS=$OIFS;
